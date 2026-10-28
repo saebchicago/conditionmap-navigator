@@ -95,6 +95,15 @@ describe("point fidelity", () => {
   it.each(["i", "my", "me", "mine", "our", "us"])("standardizes first-person word %s", (word) => {
     expect(checkPoint(`Discuss ${word} and kidney safety.`, card, input)).toEqual({ point: standardPoint(card), standardized: true });
   });
+  it("allows dose or dosing only when the selected guideline mentions dose", () => {
+    expect(checkPoint("Ask whether the metformin dose needs to change.", card, input).standardized).toBe(false);
+    expect(checkPoint("Ask about metformin dosing at this eGFR.", card, input).standardized).toBe(false);
+    const noDose: Card = { ...card, topic: "Screening", guideline_says: "Ask about screening." };
+    expect(checkPoint("Ask whether the dose needs to change.", noDose)).toEqual({ point: standardPoint(noDose), standardized: true });
+    expect(checkPoint("Ask about DOSING.", noDose).standardized).toBe(true);
+    expect(checkPoint("Ask about the doses.", noDose).standardized).toBe(true);
+    expect(checkPoint("Ask about the dosage form.", noDose).standardized).toBe(false);
+  });
   it("first-sentence extraction preserves decimals", () => {
     expect(standardPoint({ ...card, topic: "Threshold", guideline_says: "A threshold is 4.6 units. Another sentence." })).toBe("Threshold: A threshold is 4.6 units.");
   });

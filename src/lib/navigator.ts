@@ -78,6 +78,7 @@ export function orderByHfType(eligible: Card[], hfType?: string): Card[] {
 
 export const MEDICINE_TERMS = ["metformin", "sglt2", "empagliflozin", "dapagliflozin", "canagliflozin", "finerenone", "glp-1", "semaglutide", "liraglutide", "dulaglutide", "tirzepatide", "pioglitazone", "insulin", "ace inhibitor", "arb", "lisinopril", "losartan", "sacubitril", "entresto", "spironolactone", "eplerenone", "beta blocker", "furosemide", "diuretic"] as const;
 const SGLT2_IDS = new Set(["E2", "E3", "E9"]);
+const DOSING = /\b(dose|doses|dosing)\b/i;
 const RELATIONSHIPS = /\b(mom|mother|dad|father|wife|husband|her|his|him|she|he|we|i|my|me|mine|our|us|loved\s+one)\b/i;
 const normalize = (text: string) => text.toLowerCase().replace(/[‐-―]/g, "-");
 const numericTokens = (text: string) => text.match(/\d+(?:,\d{3})*(?:\.\d+)?/g)?.map((v) => v.replace(/,/g, "")) ?? [];
@@ -94,6 +95,7 @@ export function checkPoint(point: string, card: Card, input?: BriefInput): { poi
   const allowedNumbers = new Set(numericTokens(`${card.guideline_says} ${explicit}`));
   const allowedMedicines = `${card.guideline_says} ${(input?.medicines ?? []).join(" ")}`;
   const invalid = !point.trim() || RELATIONSHIPS.test(point)
+    || (DOSING.test(point) && !card.guideline_says.toLowerCase().includes("dose"))
     || numericTokens(point).some((n) => !allowedNumbers.has(n))
     || MEDICINE_TERMS.some((term) => containsTerm(point, term) && !containsTerm(allowedMedicines, term));
   return invalid ? { point: standardPoint(card), standardized: true } : { point, standardized: false };
