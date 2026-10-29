@@ -1,3 +1,5 @@
+> **This repository is an earlier prototype (Netlify and Tavily) and is no longer maintained.** The current version, built for the Nebius x NVIDIA Global AI Hackathon, is at https://github.com/saebchicago/navigateconditionmap and the live app is at https://navigateconditionmap.lovable.app.
+
 # Navigator by ConditionMap
 
 Evidence-first appointment briefs for caregivers of people living with heart failure, type 2 diabetes, and chronic kidney disease.
